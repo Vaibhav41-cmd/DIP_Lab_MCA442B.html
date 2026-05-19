@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MCA-442(B) — DIP Lab Practicals</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;500;700;900&display=swap');
+
+  :root{
+    --bg:       #0d1117;
+    --card:     #161b22;
+    --border:   #30363d;
+    --code-bg:  #0d1117;
+    --accent:   #58a6ff;
+    --green:    #3fb950;
+    --yellow:   #d29922;
+    --purple:   #a371f7;
+    --red:      #f85149;
+    --text:     #e6edf3;
+    --muted:    #8b949e;
+    --keyword:  #ff7b72;
+    --string:   #a5d6ff;
+    --comment:  #6e7681;
+    --number:   #79c0ff;
+    --fn:       #d2a8ff;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Outfit',sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    min-height:100vh;
+  }
+
+  /* ── TOP HEADER ── */
+  header{
+    background:linear-gradient(135deg,#1f2d3d 0%,#0d1117 60%,#1a1f2e 100%);
+    border-bottom:1px solid var(--border);
+    padding:32px 24px 24px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  header::before{
+    content:'';
+    position:absolute;inset:0;
+    background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(88,166,255,.12),transparent);
+  }
+  .univ{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+  header h1{font-size:clamp(18px,3vw,26px);font-weight:900;color:var(--text);margin-bottom:4px;}
+  header h2{font-size:clamp(13px,2vw,16px);font-weight:300;color:var(--accent);margin-bottom:12px;}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .badge{
+    background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);
+    color:var(--accent);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:500;
+  }
+
+  /* ── SIDEBAR + LAYOUT ── */
+  .layout{display:flex;min-height:calc(100vh - 130px);}
+
+  nav{
+    width:220px;min-width:220px;
+    background:var(--card);
+    border-right:1px solid var(--border);
+    padding:20px 0;
+    position:sticky;top:0;height:100vh;
+    overflow-y:auto;
+  }
+  nav h3{font-size:10px;text-transform:uppercase;letter-spacing:.1em;
+         color:var(--muted);padding:0 16px 8px;}
+  nav a{
+    display:block;padding:8px 16px;color:var(--muted);
+    text-decoration:none;font-size:13px;font-weight:500;
+    border-left:3px solid transparent;transition:.2s;
+  }
+  nav a:hover,nav a.active{color:var(--accent);border-left-color:var(--accent);background:rgba(88,166,255,.06);}
+
+  main{flex:1;padding:32px 28px;max-width:calc(100% - 220px);}
+
+  /* ── PRACTICAL CARD ── */
+  .prac{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;margin-bottom:36px;overflow:hidden;
+    scroll-margin-top:20px;
+  }
+  .prac-header{
+    background:linear-gradient(90deg,rgba(88,166,255,.15),rgba(88,166,255,.04));
+    border-bottom:1px solid var(--border);
+    padding:16px 20px;display:flex;align-items:center;gap:14px;
+  }
+  .pnum{
+    background:var(--accent);color:#000;
+    font-weight:900;font-size:13px;border-radius:8px;
+    width:36px;height:36px;display:grid;place-items:center;flex-shrink:0;
+  }
+  .prac-header h2{font-size:16px;font-weight:700;color:var(--text);}
+  .prac-header .co-tag{
+    margin-left:auto;background:rgba(163,113,247,.15);
+    border:1px solid rgba(163,113,247,.4);color:var(--purple);
+    font-size:11px;border-radius:20px;padding:2px 10px;white-space:nowrap;
+  }
+
+  .prac-body{padding:20px;}
+
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .info-box{
+    background:rgba(13,17,23,.6);border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;
+  }
+  .info-box label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;
+                   color:var(--muted);display:block;margin-bottom:4px;}
+  .info-box p{font-size:13px;color:var(--text);line-height:1.5;}
+  .info-box.full{grid-column:1/-1;}
+
+  /* ── CODE BLOCK ── */
+  .code-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+  .code-bar{
+    background:#161b22;border-bottom:1px solid var(--border);
+    padding:8px 14px;display:flex;align-items:center;gap:8px;
+  }
+  .dot{width:12px;height:12px;border-radius:50%;}
+  .dot.r{background:#f85149;} .dot.y{background:#d29922;} .dot.g{background:#3fb950;}
+  .code-lang{margin-left:auto;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+  .copy-btn{
+    background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);
+    color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;
+    cursor:pointer;font-family:'Outfit',sans-serif;font-weight:500;
+    transition:.2s;margin-left:8px;
+  }
+  .copy-btn:hover{background:rgba(88,166,255,.2);}
+  .copy-btn.copied{background:rgba(63,185,80,.1);border-color:rgba(63,185,80,.4);color:var(--green);}
+
+  pre{
+    background:var(--code-bg);padding:16px;
+    overflow-x:auto;font-family:'JetBrains Mono',monospace;
+    font-size:13px;line-height:1.7;tab-size:4;
+  }
+  code{color:#e6edf3;}
+
+  /* ── Syntax highlight via CSS classes ── */
+  .kw{color:#ff7b72;font-weight:600;}
+  .fn{color:#d2a8ff;}
+  .st{color:#a5d6ff;}
+  .cm{color:#6e7681;font-style:italic;}
+  .nm{color:#79c0ff;}
+  .op{color:#ff7b72;}
+  .var{color:#ffa657;}
+
+  .output-box{
+    background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.25);
+    border-radius:8px;padding:12px 14px;margin-top:14px;
+    font-size:13px;color:#9fde9f;
+  }
+  .output-box::before{content:'▶  Output: ';font-weight:700;color:var(--green);}
+
+  /* ── PRINT ── */
+  @media print{
+    nav{display:none;}
+    main{max-width:100%;padding:16px;}
+    .copy-btn{display:none;}
+    body{background:#fff;color:#000;}
+    .prac{border:1px solid #ccc;background:#f9f9f9;}
+    pre{background:#f4f4f4;color:#000;border:1px solid #ddd;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="univ">Kavayitri Bahinabai Chaudhari North Maharashtra University, Jalgaon — Faculty of Science & Technology</div>
+  <h1>Master of Computer Applications — Semester II</h1>
+  <h2>MCA-442(B) &nbsp;|&nbsp; Lab on Digital Image Processing &nbsp;[W.E.F. 2024-25]</h2>
+  <div class="badges">
+    <span class="badge">External: 30 Marks</span>
+    <span class="badge">Internal: 20 Marks</span>
+    <span class="badge">Total: 50 Marks</span>
+    <span class="badge">Exam: 2 Hours</span>
+    <span class="badge">Contact: 0:0:04</span>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav>
+  <h3>Practicals</h3>
+  <a href="#p1">P1 · Image Enhancement</a>
+  <a href="#p2">P2 · Histogram Equalization</a>
+  <a href="#p3">P3 · Bit Plane Slicing</a>
+  <a href="#p4">P4 · Smoothing Filters</a>
+  <a href="#p5">P5 · Sharpening Filters</a>
+  <a href="#p6">P6 · Frequency Domain</a>
+  <a href="#p7">P7 · Sobel / Prewitt / Roberts</a>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════════════════ P1 -->
+<div class="prac" id="p1">
+  <div class="prac-header">
+    <div class="pnum">1</div>
+    <h2>Image Enhancement Techniques</h2>
+    <span class="co-tag">CO1</span>
+  </div>
+  <div class="prac-body">
+    <div class="info-grid">
+      <div class="info-box full">
+        <label>Aim</label>
+        <p>Read an 8-bit image and apply: (a) Brightness improvement (b) Brightness reduction (c) Thresholding (d) Negative (e) Log transformation (f) Power Law transformation.</p>
+      </div>
+      <div class="info-box full">
+        <label>Theory</label>
+        <p>Image enhancement improves visual quality. Brightness shifts pixel values up/down. Thresholding converts to binary image. Negative inverts values (255–pixel). Log transform compresses dynamic range. Power-law (gamma) adjusts contrast non-linearly.</p>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="code-lang">Python · OpenCV</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+<pre><code id="code1">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
+Tk().withdraw()
+file_path = askopenfilename(
+    title="Select Image",
+    filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp *.gif")]
+)
+
+if file_path:
+    img = cv2.imread(file_path, 0).astype(np.float32)
+
+    # (a) Brightness Improvement
+    bright = np.clip(img + 50, 0, 255).astype(np.uint8)
+
+    # (b) Brightness Reduction
+    dark = np.clip(img - 50, 0, 255).astype(np.uint8)
+
+    # (c) Thresholding
+    _, thresh = cv2.threshold(img.astype(np.uint8), 127, 255, cv2.THRESH_BINARY)
+
+    # (d) Negative of Image
+    negative = (255 - img).astype(np.uint8)
+
+    # (e) Log Transformation
+    log_img = np.uint8(255 / np.log(1 + 255) * np.log(1 + img))
+
+    # (f) Power Law (Gamma) Transformation
+    gamma = 0.5
+    power_img = np.uint8(255 * (img / 255) ** gamma)
+
+    titles = ['Original', 'Brightness+', 'Brightness-',
+              'Threshold', 'Negative', 'Log', 'Power Law']
+    images = [img.astype(np.uint8), bright, dark,
+              thresh, negative, log_img, power_img]
+
+    plt.figure(figsize=(16, 4))
+    for i, (t, im) in enumerate(zip(titles, images)):
+        plt.subplot(1, 7, i + 1)
+        plt.imshow(im, cmap='gray')
+        plt.title(t, fontsize=8)
+        plt.axis('off')
+    plt.suptitle('Practical 1 - Image Enhancement Techniques', fontsize=12, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("No file selected.")</code></pre>
+    </div>
+    <div class="output-box">Seven subplots showing original and six enhanced image versions.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ P2 -->
+<div class="prac" id="p2">
+  <div class="prac-header">
+    <div class="pnum">2</div>
+    <h2>Histogram &amp; Histogram Equalization</h2>
+    <span class="co-tag">CO2</span>
+  </div>
+  <div class="prac-body">
+    <div class="info-grid">
+      <div class="info-box full">
+        <label>Aim</label>
+        <p>Read an image, plot its histogram, then perform histogram equalization and compare results.</p>
+      </div>
+      <div class="info-box full">
+        <label>Theory</label>
+        <p>A histogram shows the frequency of each pixel intensity (0–255). Histogram equalization redistributes pixel intensities to achieve a uniform distribution, improving global contrast especially in low-contrast or dark images.</p>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="code-lang">Python · OpenCV</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+<pre><code id="code2">import cv2
+import matplotlib.pyplot as plt
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
+Tk().withdraw()
+file_path = askopenfilename(
+    title="Select Image",
+    filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp")]
+)
+
+if file_path:
+    img = cv2.imread(file_path, 0)
+
+    # Histogram Equalization
+    eq = cv2.equalizeHist(img)
+
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(2, 2, 1)
+    plt.imshow(img, cmap='gray')
+    plt.title('Original Image')
+    plt.axis('off')
+
+    plt.subplot(2, 2, 2)
+    plt.hist(img.ravel(), 256, [0, 256], color='steelblue', alpha=0.8)
+    plt.title('Original Histogram')
+    plt.xlabel('Pixel Intensity')
+    plt.ylabel('Frequency')
+
+    plt.subplot(2, 2, 3)
+    plt.imshow(eq, cmap='gray')
+    plt.title('Equalized Image')
+    plt.axis('off')
+
+    plt.subplot(2, 2, 4)
+    plt.hist(eq.ravel(), 256, [0, 256], color='green', alpha=0.8)
+    plt.title('Equalized Histogram')
+    plt.xlabel('Pixel Intensity')
+    plt.ylabel('Frequency')
+
+    plt.suptitle('Practical 2 - Histogram Equalization', fontsize=12, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("No file selected.")</code></pre>
+    </div>
+    <div class="output-box">2×2 grid: original image, its histogram, equalized image, equalized histogram.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ P3 -->
+<div class="prac" id="p3">
+  <div class="prac-header">
+    <div class="pnum">3</div>
+    <h2>Gray Level Slicing, Bit Effect &amp; Bit Plane Slicing</h2>
+    <span class="co-tag">CO3</span>
+  </div>
+  <div class="prac-body">
+    <div class="info-grid">
+      <div class="info-box full">
+        <label>Aim</label>
+        <p>(a) Gray level slicing on cameraman image. (b) Effect of each bit on the image. (c) Extract 8 different bit planes.</p>
+      </div>
+      <div class="info-box full">
+        <label>Theory</label>
+        <p>Gray-level slicing highlights a specific intensity range. Bit-plane slicing decomposes an 8-bit image into 8 binary planes (bit 0 = LSB to bit 7 = MSB). Higher bit planes contain more structural/shape information; lower planes contain fine detail and noise.</p>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="code-lang">Python · OpenCV</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+<pre><code id="code3">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
+Tk().withdraw()
+file_path = askopenfilename(
+    title="Select 8-bit Grayscale Image",
+    filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp")]
+)
+
+if file_path:
+    img = cv2.imread(file_path, 0)
+
+    # ── (a) Gray Level Slicing ─────────────────────────────────────────
+    sliced = np.where((img >= 100) & (img <= 200), 255, 0).astype(np.uint8)
+
+    plt.figure(figsize=(8, 3))
+    plt.subplot(1, 2, 1)
+    plt.imshow(img, cmap='gray')
+    plt.title('Original Image')
+    plt.axis('off')
+    plt.subplot(1, 2, 2)
+    plt.imshow(sliced, cmap='gray')
+    plt.title('Gray Level Sliced (100-200)')
+    plt.axis('off')
+    plt.suptitle('(a) Gray Level Slicing', fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+
+    # ── (b) Effect of Each Bit ─────────────────────────────────────────
+    plt.figure(figsize=(16, 3))
+    plt.suptitle('(b) Effect of Each Bit on Image', fontweight='bold')
+    for bit in range(8):
+        mask = np.full(img.shape, 1 << bit, dtype=np.uint8)
+        bit_img = cv2.bitwise_and(img, mask)
+        plt.subplot(1, 8, bit + 1)
+        plt.imshow(bit_img, cmap='gray')
+        plt.title(f'Bit {bit}', fontsize=8)
+        plt.axis('off')
+    plt.tight_layout()
+    plt.show()
+
+    # ── (c) Bit Plane Slicing ──────────────────────────────────────────
+    plt.figure(figsize=(16, 3))
+    plt.suptitle('(c) Bit Plane Slicing (0=LSB  to  7=MSB)', fontweight='bold')
+    for bit in range(8):
+        plane = ((img >> bit) & 1) * 255
+        plt.subplot(1, 8, bit + 1)
+        plt.imshow(plane, cmap='gray')
+        plt.title(f'Plane {bit}', fontsize=8)
+        plt.axis('off')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("No file selected.")</code></pre>
+    </div>
+    <div class="output-box">Three separate figure windows: gray-level sliced image, bit-effect images, and 8 bit planes.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ P4 -->
+<div class="prac" id="p4">
+  <div class="prac-header">
+    <div class="pnum">4</div>
+    <h2>Smoothing Spatial Filters</h2>
+    <span class="co-tag">CO4</span>
+  </div>
+  <div class="prac-body">
+    <div class="info-grid">
+      <div class="info-box full">
+        <label>Aim</label>
+        <p>Implement various smoothing spatial filters: Mean Filter, Weighted Mean Filter, and Median Filter.</p>
+      </div>
+      <div class="info-box full">
+        <label>Theory</label>
+        <p>Smoothing filters reduce noise by replacing each pixel with a function of its neighbourhood. Mean filter averages all neighbours equally. Weighted mean gives higher weight to central pixels. Median filter replaces with median value — very effective for salt-and-pepper noise without blurring edges.</p>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="code-lang">Python · OpenCV</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+<pre><code id="code4">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
+Tk().withdraw()
+file_path = askopenfilename(
+    title="Select Image",
+    filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp")]
+)
+
+if file_path:
+    img = cv2.imread(file_path, 0)
+
+    # Add Salt & Pepper Noise for demonstration
+    noisy = img.copy()
+    prob = 0.02
+    rnd = np.random.random(img.shape)
+    noisy[rnd < prob] = 0
+    noisy[rnd > 1 - prob] = 255
+
+    # Mean Filter (3x3)
+    mean_kernel = np.ones((3, 3), np.float32) / 9
+    mean_img = cv2.filter2D(noisy, -1, mean_kernel)
+
+    # Weighted Mean Filter (Gaussian-like)
+    w_kernel = np.array([[1, 2, 1],
+                         [2, 4, 2],
+                         [1, 2, 1]], np.float32) / 16
+    weighted = cv2.filter2D(noisy, -1, w_kernel)
+
+    # Median Filter
+    median_img = cv2.medianBlur(noisy, 3)
+
+    titles = ['Original', 'Noisy Image', 'Mean Filter', 'Weighted Mean', 'Median Filter']
+    images = [img, noisy, mean_img, weighted, median_img]
+
+    plt.figure(figsize=(16, 4))
+    for i, (t, im) in enumerate(zip(titles, images)):
+        plt.subplot(1, 5, i + 1)
+        plt.imshow(im, cmap='gray')
+        plt.title(t, fontsize=9)
+        plt.axis('off')
+    plt.suptitle('Practical 4 - Smoothing Spatial Filters', fontsize=12, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("No file selected.")</code></pre>
+    </div>
+    <div class="output-box">Five subplots: original, noisy, mean filtered, weighted mean filtered, and median filtered images.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ P5 -->
+<div class="prac" id="p5">
+  <div class="prac-header">
+    <div class="pnum">5</div>
+    <h2>Gaussian Blur, High-Pass, Laplacian &amp; High-Boost</h2>
+    <span class="co-tag">CO4</span>
+  </div>
+  <div class="prac-body">
+    <div class="info-grid">
+      <div class="info-box full">
+        <label>Aim</label>
+        <p>(a) Gaussian 3×3 mask for blurring (b) High-pass filter mask (c) Laplacian with centre +ve and −ve (d) High-boost filtering.</p>
+      </div>
+      <div class="info-box full">
+        <label>Theory</label>
+        <p>Gaussian blur uses a bell-shaped kernel for smooth blurring. High-pass filter enhances edges. Laplacian (2nd derivative) detects edges; positive centre gives bright edges on dark background. High-boost = A×Original − Blurred (A &gt; 1), which sharpens while preserving image structure.</p>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="code-lang">Python · OpenCV</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+<pre><code id="code5">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
+Tk().withdraw()
+file_path = askopenfilename(
+    title="Select Image",
+    filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp")]
+)
+
+if file_path:
+    img = cv2.imread(file_path, 0).astype(np.float32)
+
+    # (a) Gaussian 3x3 Blur
+    gauss = cv2.GaussianBlur(img, (3, 3), 0)
+
+    # (b) High-Pass Filter Mask
+    hp_kernel = np.array([[-1, -1, -1],
+                           [-1,  9, -1],
+                           [-1, -1, -1]], np.float32)
+    hp = cv2.filter2D(img, -1, hp_kernel)
+
+    # (c) Laplacian - Centre Positive
+    lap_pos_kernel = np.array([[0,  1, 0],
+                                [1, -4, 1],
+                                [0,  1, 0]], np.float32)
+    lap_p = cv2.filter2D(img, -1, lap_pos_kernel)
+
+    # (c) Laplacian - Centre Negative
+    lap_neg_kernel = np.array([[ 0, -1,  0],
+                                [-1,  4, -1],
+                                [ 0, -1,  0]], np.float32)
+    lap_n = cv2.filter2D(img, -1, lap_neg_kernel)
+
+    # (d) High-Boost Filtering (A = 1.5)
+    A = 1.5
+    hb = np.clip(A * img - gauss, 0, 255)
+
+    titles = ['Original', '(a) Gaussian Blur', '(b) High-Pass',
+              '(c) Laplacian +ve', '(c) Laplacian -ve', '(d) High-Boost']
+    images = [img, gauss, hp, lap_p, lap_n, hb]
+
+    plt.figure(figsize=(16, 4))
+    for i, (t, im) in enumerate(zip(titles, images)):
+        plt.subplot(1, 6, i + 1)
+        plt.imshow(np.clip(im, 0, 255).astype(np.uint8), cmap='gray')
+        plt.title(t, fontsize=8)
+        plt.axis('off')
+    plt.suptitle('Practical 5 - Sharpening / Enhancement Filters', fontsize=12, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("No file selected.")</code></pre>
+    </div>
+    <div class="output-box">Six subplots: original, Gaussian blurred, high-pass, Laplacian (+ve), Laplacian (−ve), and high-boost filtered images.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ P6 -->
+<div class="prac" id="p6">
+  <div class="prac-header">
+    <div class="pnum">6</div>
+    <h2>Frequency Domain Filters (LPF &amp; HPF)</h2>
+    <span class="co-tag">CO4</span>
+  </div>
+  <div class="prac-body">
+    <div class="info-grid">
+      <div class="info-box full">
+        <label>Aim</label>
+        <p>Implement various low-pass filters and high-pass filters in the frequency domain.</p>
+      </div>
+      <div class="info-box full">
+        <label>Theory</label>
+        <p>Frequency domain filtering uses DFT (Discrete Fourier Transform). Low-pass filters pass low frequencies (smooth/blur image). High-pass filters retain high frequencies (edges/details). Ideal filters have sharp cutoff; Gaussian filters have smooth cutoff avoiding ringing artifacts.</p>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="code-lang">Python · OpenCV + NumPy</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+<pre><code id="code6">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
+Tk().withdraw()
+file_path = askopenfilename(
+    title="Select Image",
+    filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp")]
+)
+
+if file_path:
+    img = cv2.imread(file_path, 0)
+    rows, cols = img.shape
+    crow, ccol = rows // 2, cols // 2
+
+    # Compute DFT and shift
+    dft    = np.fft.fft2(img)
+    dft_sh = np.fft.fftshift(dft)
+    mag_sp = 20 * np.log(np.abs(dft_sh) + 1)
+
+    D0 = 30  # Cutoff frequency
+
+    # ── Ideal Low-Pass Filter ──────────────────────────────────────────
+    mask_lp = np.zeros((rows, cols), np.uint8)
+    cv2.circle(mask_lp, (ccol, crow), D0, 1, -1)
+    lp_img = np.abs(np.fft.ifft2(np.fft.ifftshift(dft_sh * mask_lp))).astype(np.uint8)
+
+    # ── Ideal High-Pass Filter ─────────────────────────────────────────
+    mask_hp = 1 - mask_lp
+    hp_img  = np.abs(np.fft.ifft2(np.fft.ifftshift(dft_sh * mask_hp))).astype(np.uint8)
+
+    # ── Gaussian Low-Pass Filter ───────────────────────────────────────
+    u = np.arange(cols) - ccol
+    v = np.arange(rows) - crow
+    U, V = np.meshgrid(u, v)
+    D    = np.sqrt(U**2 + V**2)
+    glp  = np.exp(-(D**2) / (2 * (D0**2)))
+    glp_img = np.abs(np.fft.ifft2(np.fft.ifftshift(dft_sh * glp))).astype(np.uint8)
+
+    # ── Gaussian High-Pass Filter ──────────────────────────────────────
+    ghp     = 1 - glp
+    ghp_img = np.abs(np.fft.ifft2(np.fft.ifftshift(dft_sh * ghp))).astype(np.uint8)
+
+    titles = ['Original', 'DFT Spectrum', 'Ideal LPF', 'Ideal HPF',
+              'Gaussian LPF', 'Gaussian HPF']
+    images = [img, mag_sp, lp_img, hp_img, glp_img, ghp_img]
+
+    plt.figure(figsize=(16, 4))
+    for i, (t, im) in enumerate(zip(titles, images)):
+        plt.subplot(1, 6, i + 1)
+        plt.imshow(im, cmap='gray')
+        plt.title(t, fontsize=8)
+        plt.axis('off')
+    plt.suptitle('Practical 6 - Frequency Domain Filters', fontsize=12, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("No file selected.")</code></pre>
+    </div>
+    <div class="output-box">Six subplots: original, DFT spectrum, Ideal LPF, Ideal HPF, Gaussian LPF, Gaussian HPF.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ P7 -->
+<div class="prac" id="p7">
+  <div class="prac-header">
+    <div class="pnum">7</div>
+    <h2>Edge Detection: Sobel, Prewitt &amp; Roberts</h2>
+    <span class="co-tag">CO4</span>
+  </div>
+  <div class="prac-body">
+    <div class="info-grid">
+      <div class="info-box full">
+        <label>Aim</label>
+        <p>Implement and study the effect of different edge detection masks: Sobel, Prewitt, and Roberts.</p>
+      </div>
+      <div class="info-box full">
+        <label>Theory</label>
+        <p>Edge detectors compute image gradients. Sobel (3×3) is robust to noise using weighted differences. Prewitt (3×3) uses uniform weights. Roberts (2×2) is the fastest but most sensitive to noise. Gradient magnitude = √(Gx² + Gy²).</p>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="code-lang">Python · OpenCV  [Bug Fixed ✓]</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+<pre><code id="code7">import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
+Tk().withdraw()
+file_path = askopenfilename(
+    title="Select Image",
+    filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp *.gif")]
+)
+
+if file_path:
+    img = cv2.imread(file_path, 0)
+
+    # ── SOBEL ──────────────────────────────────────────────────────────
+    # NOTE: Use cv2.CV_64F (capital letters) — NOT cv2.cv_64F (bug fix!)
+    sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
+    sobel_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
+    sobel   = cv2.magnitude(sobel_x, sobel_y)
+    sobel   = np.uint8(np.clip(sobel, 0, 255))
+
+    # ── PREWITT ────────────────────────────────────────────────────────
+    kernal_x = np.array([[-1, 0, 1],
+                          [-1, 0, 1],
+                          [-1, 0, 1]], np.float32)
+    kernal_y = np.array([[-1, -1, -1],
+                          [ 0,  0,  0],
+                          [ 1,  1,  1]], np.float32)
+    prewitt_x = cv2.filter2D(img, -1, kernal_x)
+    prewitt_y = cv2.filter2D(img, -1, kernal_y)
+    prewitt   = cv2.add(prewitt_x, prewitt_y)
+
+    # ── ROBERTS ────────────────────────────────────────────────────────
+    kernel_x = np.array([[ 1,  0],
+                          [ 0, -1]], np.float32)
+    kernel_y = np.array([[ 0,  1],
+                          [-1,  0]], np.float32)
+    roberts_x = cv2.filter2D(img, -1, kernel_x)
+    roberts_y = cv2.filter2D(img, -1, kernel_y)
+    roberts   = cv2.add(roberts_x, roberts_y)
+
+    # ── PLOT ───────────────────────────────────────────────────────────
+    plt.figure(figsize=(12, 4))
+
+    plt.subplot(1, 4, 1)
+    plt.imshow(img, cmap='gray')
+    plt.title('Original Image')
+    plt.axis('off')
+
+    plt.subplot(1, 4, 2)
+    plt.imshow(sobel, cmap='gray')
+    plt.title('Sobel')
+    plt.axis('off')
+
+    plt.subplot(1, 4, 3)
+    plt.imshow(prewitt, cmap='gray')
+    plt.title('Prewitt')
+    plt.axis('off')
+
+    plt.subplot(1, 4, 4)
+    plt.imshow(roberts, cmap='gray')
+    plt.title('Roberts')
+    plt.axis('off')
+
+    plt.suptitle('Practical 7 - Edge Detection Masks', fontsize=12, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("File not found")</code></pre>
+    </div>
+    <div class="output-box">Four subplots: original image and edges detected by Sobel, Prewitt, and Roberts operators.</div>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<div style="text-align:center;color:var(--muted);font-size:12px;padding:20px 0 40px;">
+  <strong style="color:var(--accent)">Install dependencies:</strong>
+  &nbsp; <code style="background:var(--card);padding:2px 8px;border-radius:4px;font-size:12px;">pip install opencv-python numpy matplotlib</code>
+  <br><br>MCA-442(B) · DIP Lab · KBCNMU Jalgaon · 2024-25
+</div>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn){
+  const pre = btn.closest('.code-wrap').querySelector('code');
+  navigator.clipboard.writeText(pre.innerText).then(()=>{
+    btn.textContent='Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},2000);
+  });
+}
+
+// Highlight active nav link on scroll
+const sections = document.querySelectorAll('.prac');
+const links    = document.querySelectorAll('nav a');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if(active) active.classList.add('active');
+    }
+  });
+},{threshold:0.3});
+sections.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
